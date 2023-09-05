@@ -2,6 +2,7 @@
 
 import { ExtensionContext, Hover, languages, workspace } from "vscode";
 import * as inputHandlers from "./utils/input-handlers";
+import { getAddress } from "ethers";
 
 export function activate(context: ExtensionContext) {
   var hover = languages.registerHoverProvider(
@@ -43,10 +44,15 @@ export function activate(context: ExtensionContext) {
           const length = bytes.length;
           let message = `Input: ${word} (${length}B)(0x${length.toString(16)})\n`;
           if (length == 20) {
-            message += `Type:  `;
-            message += `${" ".repeat(formMaxLength - 4)} Address \n`;
+            message += `Type: `;
+            try {
+              getAddress(word)
+              message += `${" ".repeat(formMaxLength - 4)} ✓ Vaild Address \n`;
+            } catch {
+              message += `${" ".repeat(formMaxLength - 4)} ✗ Invaild Address \n`;
+            }
           } else if (length == 32) {
-            message += `Type:  `;
+            message += `Type: `;
             message += `${" ".repeat(formMaxLength - 4)} Uint256 \n`;
           }
           message += "\n";
@@ -55,7 +61,8 @@ export function activate(context: ExtensionContext) {
             if (!(form in formsMap)) continue;
 
             if (form === "decimal" && length >= 20) continue;
-            if (form === "size" && length >= 20) continue;
+            if (form === "gwei" && length >= 20) continue;
+            if (form === "ether" && length >= 20) continue;
             if (form === "binary" && length > 4) continue;
             const result = formsMap[form](bytes);
             if (result == "") continue;

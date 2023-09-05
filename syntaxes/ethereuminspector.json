@@ -22,7 +22,7 @@
       "name": "string.quoted"
     },
     "output-form-label": {
-      "match": "(Input|Decimal|Hexadecimal|Binary|Base64|Gwei|Ether|:)",
+      "match": "(Input|Type|Decimal|HexadecimalReverse|Hexadecimal|Binary|Base64|Gwei|Ether|:)",
       "name": "keyword.letter"
     },
     "endiannes": {

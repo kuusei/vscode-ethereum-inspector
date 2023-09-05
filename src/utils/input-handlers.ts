@@ -10,7 +10,10 @@ const availableFormsMap = {
     return `${asLittleEndian} / ${asBigEndian}(reverse)`;
   },
   hexadecimal: function (bytes: Uint8Array) {
-    return `0x${converters.toHexadecimal(bytes)} / 0x${converters.toHexadecimal(bytes.reverse())}(reverse)`;
+    return `0x${converters.toHexadecimal(bytes)}`;
+  },
+  hexadecimalReverse: function (bytes: Uint8Array) {
+    return `0x${converters.toHexadecimal(bytes.reverse())}(reverse)`;
   },
   binary: function (bytes: Uint8Array) {
     return utils.addSeparatorToNumber(converters.toBinary(bytes), " ", 8);
@@ -64,7 +67,7 @@ class InputHandlerBinary extends InputHandler {
   }
 
   getFormsMap() {
-    return createFormsMap(["ascii", "decimal", "hexadecimal", "size", "base64"]);
+    return createFormsMap(["ascii", "decimal", "hexadecimal", "hexadecimalReverse", "size", "base64"]);
   }
 }
 
@@ -86,7 +89,7 @@ class InputHandlerDecimal extends InputHandler {
   }
 
   getFormsMap() {
-    return createFormsMap(["ascii", "binary", "hexadecimal", "size", "base64", "gwei", "ether"]);
+    return createFormsMap(["ascii", "binary", "hexadecimal", "hexadecimalReverse", "size", "base64", "gwei", "ether"]);
   }
 }
 
@@ -108,7 +111,17 @@ class InputHandlerHexadecimal extends InputHandler {
   }
 
   getFormsMap() {
-    return createFormsMap(["ascii", "binary", "decimal", "hexadecimal", "size", "base64", "gwei", "ether"]);
+    return createFormsMap([
+      "ascii",
+      "binary",
+      "decimal",
+      "hexadecimal",
+      "hexadecimalReverse",
+      "size",
+      "base64",
+      "gwei",
+      "ether",
+    ]);
   }
 }
 
