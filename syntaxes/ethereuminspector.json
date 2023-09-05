@@ -1,0 +1,33 @@
+{
+  "scopeName": "source.ethereuminspector",
+  "fileTypes": ["ethereuminspector"],
+  "patterns": [
+    { "include": "#title" },
+    { "include": "#input-lenght" },
+    { "include": "#input-lenght-hex" },
+    { "include": "#output-form-label" },
+    { "include": "#endiannes" }
+  ],
+  "repository": {
+    "title": {
+      "match": "EthereumInspector:",
+      "name": "markup.heading.1.html"
+    },
+    "input-length": {
+      "match": "[0-9]+B",
+      "name": "string.quoted"
+    },
+    "input-length-hex": {
+      "match": "\\(0x[0-9,a-f,A-F]+\\)",
+      "name": "string.quoted"
+    },
+    "output-form-label": {
+      "match": "(Input|Decimal|Hexadecimal|Binary|Base64|Gwei|Ether|:)",
+      "name": "keyword.letter"
+    },
+    "endiannes": {
+      "match": "(Little Endian|Big Endian|[0-9]+B)",
+      "name": "string.quoted"
+    }
+  }
+}
