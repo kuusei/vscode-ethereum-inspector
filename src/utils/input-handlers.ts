@@ -1,32 +1,44 @@
 "use strict";
 
-import * as converters from "./converters";
-import * as utils from "./utils";
+import {
+  fromBinaryToUint8Array,
+  fromDecimalToUint8Array,
+  fromHexadecimalToUint8Array,
+  toBase64,
+  toBinary,
+  toDecimalUnsigned,
+  toHexadecimal,
+} from "./converters";
+import { addSeparatorToNumber, copyBytes, shiftBy } from "./utils";
 
 const availableFormsMap = {
   decimal: function (bytes: Uint8Array) {
-    const asLittleEndian = utils.addSeparatorToNumber(converters.toDecimalUnsigned(bytes), ",", 3);
-    const asBigEndian = utils.addSeparatorToNumber(converters.toDecimalUnsigned(bytes.reverse()), ",", 3);
+    const asLittleEndian = addSeparatorToNumber(toDecimalUnsigned(bytes), ",", 3);
+    const asBigEndian = addSeparatorToNumber(toDecimalUnsigned(copyBytes(bytes).reverse()), ",", 3);
     return `${asLittleEndian} / ${asBigEndian}(reverse)`;
   },
   hexadecimal: function (bytes: Uint8Array) {
-    return `0x${converters.toHexadecimal(bytes)}`;
+    if (bytes.length >= 20) {
+      return `0x${toHexadecimal(bytes)}`;
+    }
+    return `0x ${addSeparatorToNumber(toHexadecimal(bytes), " ", 2)}`;
   },
   hexadecimalReverse: function (bytes: Uint8Array) {
-    return `0x${converters.toHexadecimal(bytes.reverse())}(reverse)`;
+    const reverseBytes = copyBytes(bytes).reverse();
+    if (reverseBytes.length >= 20) {
+      return `0x${toHexadecimal(reverseBytes)}`;
+    }
+    return `0x ${addSeparatorToNumber(toHexadecimal(reverseBytes), " ", 2)}`;
   },
   binary: function (bytes: Uint8Array) {
-    return utils.addSeparatorToNumber(converters.toBinary(bytes), " ", 8);
+    return addSeparatorToNumber(toBinary(bytes), " ", 8);
   },
-  base64: converters.toBase64,
+  base64: toBase64,
   gwei: function (bytes: Uint8Array) {
-    return `${utils.shiftBy(converters.toDecimalUnsigned(bytes), 9)}gwei / ${utils.shiftBy(
-      converters.toDecimalUnsigned(bytes),
-      -9
-    )}gwei(From Ether)`;
+    return `${shiftBy(toDecimalUnsigned(bytes), 9)}Gwei / ${shiftBy(toDecimalUnsigned(bytes), -9)}Gwei(From Ether)`;
   },
   ether: function (bytes: Uint8Array) {
-    return `${utils.shiftBy(converters.toDecimalUnsigned(bytes), 18)}ether`;
+    return `${shiftBy(toDecimalUnsigned(bytes), 18)}Ether`;
   },
 };
 
@@ -63,11 +75,11 @@ class InputHandlerBinary extends InputHandler {
   }
 
   convert(str: string, isLittleEndian: boolean) {
-    return converters.fromBinaryToUint8Array(str, isLittleEndian);
+    return fromBinaryToUint8Array(str, isLittleEndian);
   }
 
   getFormsMap() {
-    return createFormsMap(["ascii", "decimal", "hexadecimal", "hexadecimalReverse", "size", "base64"]);
+    return createFormsMap(["decimal", "hexadecimal", "hexadecimalReverse", "size", "base64"]);
   }
 }
 
@@ -85,11 +97,11 @@ class InputHandlerDecimal extends InputHandler {
   }
 
   convert(str: string, isLittleEndian: boolean) {
-    return converters.fromDecimalToUint8Array(str, !isLittleEndian);
+    return fromDecimalToUint8Array(str, isLittleEndian);
   }
 
   getFormsMap() {
-    return createFormsMap(["ascii", "binary", "hexadecimal", "hexadecimalReverse", "size", "base64", "gwei", "ether"]);
+    return createFormsMap(["binary", "hexadecimal", "hexadecimalReverse", "size", "base64", "gwei", "ether"]);
   }
 }
 
@@ -107,21 +119,11 @@ class InputHandlerHexadecimal extends InputHandler {
   }
 
   convert(str: string, isLittleEndian: boolean) {
-    return converters.fromHexadecimalToUint8Array(str, isLittleEndian);
+    return fromHexadecimalToUint8Array(str, isLittleEndian);
   }
 
   getFormsMap() {
-    return createFormsMap([
-      "ascii",
-      "binary",
-      "decimal",
-      "hexadecimal",
-      "hexadecimalReverse",
-      "size",
-      "base64",
-      "gwei",
-      "ether",
-    ]);
+    return createFormsMap(["binary", "decimal", "hexadecimalReverse", "size", "base64", "gwei", "ether"]);
   }
 }
 

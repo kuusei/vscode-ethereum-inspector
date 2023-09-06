@@ -1,22 +1,21 @@
 "use strict";
 
-import { ExtensionContext, Hover, languages, workspace } from "vscode";
+import { ExtensionContext, Hover, MarkdownString, languages } from "vscode";
 import * as inputHandlers from "./utils/input-handlers";
 import { getAddress } from "ethers";
+import { getConfigs } from "./utils/config";
+import { getExplorerLinks } from "./utils/explorer";
+import { json } from "stream/consumers";
 
 export function activate(context: ExtensionContext) {
-  var hover = languages.registerHoverProvider(
+  const hover = languages.registerHoverProvider(
     { scheme: "*", language: "*" },
     {
       provideHover(document, position, token) {
-        var word = document.getText(document.getWordRangeAtPosition(position));
+        const word = document.getText(document.getWordRangeAtPosition(position));
+        const { inputDataTypes, forms, endianness, explorers } = getConfigs();
 
-        let inputDataTypes: string[] = workspace.getConfiguration("ethereuminspector").get("inputDataTypes");
-        let forms: string[] = workspace.getConfiguration("ethereuminspector").get("hoverContent");
-        let endianness: string = workspace.getConfiguration("ethereuminspector").get("endianness");
-
-        endianness = endianness.charAt(0).toUpperCase() + endianness.slice(1).toLowerCase() + " Endian";
-
+        // error handling
         if (inputDataTypes.length == 0 || forms.length == 0) {
           return undefined;
         }
@@ -42,37 +41,46 @@ export function activate(context: ExtensionContext) {
           }
 
           const length = bytes.length;
-          let message = `Input: ${word} (${length}B)(0x${length.toString(16)})\n`;
+          const message = new MarkdownString();
+          message.appendCodeblock(`Input: ${word} (${length}B)(0x${length.toString(16)})\n`, "ethereuminspector");
+
           if (length == 20) {
-            message += `Type: `;
             try {
-              getAddress(word)
-              message += `${" ".repeat(formMaxLength - 4)} ✓ Vaild Address \n`;
+              getAddress(word);
+              message.appendCodeblock(`Type: ${" ".repeat(formMaxLength - 4)} ✓ valid Address \n`, "ethereuminspector");
+              message.appendMarkdown(`${getExplorerLinks(explorers, word)} \n\n`);
             } catch {
-              message += `${" ".repeat(formMaxLength - 4)} ✗ Invaild Address \n`;
+              message.appendCodeblock(
+                `Type: ${" ".repeat(formMaxLength - 4)} ✗ Invalid Address \n`,
+                "ethereuminspector"
+              );
             }
           } else if (length == 32) {
-            message += `Type: `;
-            message += `${" ".repeat(formMaxLength - 4)} Uint256 \n`;
+            message.appendCodeblock(`Type: ${" ".repeat(formMaxLength - 4)} Uint256 \n`, "ethereuminspector");
           }
-          message += "\n";
+
+          message.appendCodeblock("\n", "ethereuminspector");
 
           for (let form of forms) {
             if (!(form in formsMap)) continue;
 
+            const result = formsMap[form](bytes);
+            if (result == "") continue;
             if (form === "decimal" && length >= 20) continue;
             if (form === "gwei" && length >= 20) continue;
             if (form === "ether" && length >= 20) continue;
             if (form === "binary" && length > 4) continue;
-            const result = formsMap[form](bytes);
-            if (result == "") continue;
 
-            message += form.charAt(0).toUpperCase() + form.slice(1) + ":  ";
-            message += " ".repeat(formMaxLength - form.length) + result + "\n";
+            message.appendCodeblock(
+              `${form.charAt(0).toUpperCase() + form.slice(1)}: ${" ".repeat(
+                formMaxLength - form.length
+              )} ${result} \n`,
+              "ethereuminspector"
+            );
           }
-          message += "\n" + endianness;
+          message.appendCodeblock("\n" + endianness, "ethereuminspector");
 
-          return new Hover({ language: "ethereuminspector", value: message });
+          return new Hover(message);
         }
       },
     }

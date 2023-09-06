@@ -11,6 +11,14 @@ export function addSeparatorToNumber(str: string, sep: string, n: number) {
   return result;
 }
 
+export function copyBytes(bytes: Uint8Array) {
+  const copy = new Uint8Array(bytes.length);
+  for (let i = 0; i < bytes.length; ++i) {
+    copy[i] = bytes[i];
+  }
+  return copy;
+}
+
 export function reverseString(str: string) {
   return str.split("").reverse().join("");
 }

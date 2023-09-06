@@ -53,6 +53,16 @@
           "type": "string",
           "default": "little",
           "description": "Little Endian or Big Endian?"
+        },
+        "ethereuminspector.explorers": {
+          "type": "object",
+          "default": {
+            "Etherscan": "https://etherscan.io/address/",
+            "Arbiscan": "https://arbiscan.io/address/",
+            "Optimism": "https://optimistic.etherscan.io/address/",
+            "Polygonscan": "https://polygonscan.com/address/",
+            "Bscscan": "https://bscscan.com/address/"
+          }
         }
       }
     },
