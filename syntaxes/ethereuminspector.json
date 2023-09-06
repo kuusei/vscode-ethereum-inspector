@@ -3,23 +3,24 @@
   "fileTypes": ["ethereuminspector"],
   "patterns": [
     { "include": "#title" },
-    { "include": "#input-lenght" },
-    { "include": "#input-lenght-hex" },
+    { "include": "#input-value" },
+    { "include": "#input-length" },
+    { "include": "#input-length-hex" },
     { "include": "#output-form-label" },
     { "include": "#endiannes" }
   ],
   "repository": {
-    "title": {
-      "match": "EthereumInspector:",
-      "name": "markup.heading.1.html"
-    },
+		"input-value": {
+			"match": "Input: ([0-9a-fA-FxXbB]*)",
+			"name": "markup.heading.1.html"
+		},
     "input-length": {
-      "match": "[0-9]+B",
-      "name": "string.quoted"
+      "match": "\\(([0-9]+B)\\)",
+      "name": "constant.numeric"
     },
     "input-length-hex": {
-      "match": "\\(0x[0-9,a-f,A-F]+\\)",
-      "name": "string.quoted"
+      "match": "\\((0x[0-9,a-f,A-F]+)\\)",
+      "name": "constant.numeric"
     },
     "output-form-label": {
       "match": "(Input|Type|Decimal|HexadecimalReverse|Hexadecimal|Binary|Base64|Gwei|Ether|:)",
