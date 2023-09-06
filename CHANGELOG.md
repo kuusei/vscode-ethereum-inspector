@@ -1,5 +1,7 @@
 ## Notes
 
+### 0.0.5 optimize plugin size
+
 ### 0.0.4 add block explorer link and fix hex reverse
 
 ### 0.0.2 add split hexadecimal and check address

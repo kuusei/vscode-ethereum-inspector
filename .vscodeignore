@@ -2,7 +2,11 @@
 .vscode-test/**
 out/test/**
 src/**
+images/**
+
 .gitignore
+pnpm-lock.yaml
+
 **/tsconfig.json
 **/tslint.json
 **/*.map

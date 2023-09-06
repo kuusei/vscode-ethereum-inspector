@@ -22,7 +22,7 @@
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "onStartupFinished"
   ],
   "contributes": {
     "configuration": {
@@ -80,16 +80,16 @@
     ]
   },
   "vsce": {
-    "baseImagesUrl": "https://my.custom/base/images/url",
-    "dependencies": true,
+    "githubBranch": "main",
+    "dependencies": false,
     "yarn": false
   },
   "main": "./out/extension.js",
   "scripts": {
     "prepublish": "pnpm run build --minify",
     "build": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
-    "package": "pnpm prepublish && npx vsce package --no-dependencies",
-    "publish": "pnpm prepublish && npx vsce publish --no-dependencies"
+    "package": "pnpm prepublish && npx vsce package",
+    "publish": "pnpm prepublish && npx vsce publish"
   },
   "devDependencies": {
     "@types/node": "^16.18.48",
