@@ -2,7 +2,7 @@
   "name": "ethereum-inspector",
   "displayName": "Ethereum Inspector",
   "description": "Provides inspector for ethereum data",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "kuusei",
   "license": "MIT",
   "repository": {
